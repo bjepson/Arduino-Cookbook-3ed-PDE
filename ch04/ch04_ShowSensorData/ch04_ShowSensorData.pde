@@ -1,25 +1,24 @@
 /*
  * ShowSensorData. 
  * 
- * Displays bar graph of CSV sensor data ranging from -127 to 127
- * expects format as: "Data,s1,s2,...s12\n" (any number of to 12 sensors is supported)
- * labels can be sent as follows: "Labels,label1, label2,...label12\n");
+ * Displays bar graph of JSON sensor data ranging from -127 to 127
+ * expects format as: "{'label1': value, 'label2': value,}\n" 
+ * for example:
+ * {'x': 1.0, 'y': -1.0, 'z': 2.1,}
  */
 
 import processing.serial.*;
 import java.util.Set;
 
 Serial myPort;  // Create object from Serial class
-String message = null;
-PFont fontA;    // font to display servo pin number 
+PFont fontA;    // font to display text 
 int fontSize = 12;
 
-
-int rectMargin = 40;
+int rectMargin  = 40;
 int windowWidth = 600;
-int maxLabelCount = 12;
-int windowHeight = rectMargin + (maxLabelCount + 1) * (fontSize *2);
-int rectWidth = windowWidth - rectMargin*2;
+int maxLabelCount = 12; // Increase this if you need to support more labels
+int windowHeight  = rectMargin + (maxLabelCount + 1) * (fontSize *2);
+int rectWidth  = windowWidth - rectMargin*2;
 int rectHeight = windowHeight - rectMargin;
 int rectCenter = rectMargin + rectWidth / 2;
 
@@ -30,7 +29,6 @@ int maxValue = 5;
 float scale = float(rectWidth) / (maxValue - minValue);
 
 void settings() {
-  //rectMargin = 0;
   size(windowWidth, windowHeight);
 }
 
@@ -47,8 +45,10 @@ void setup() {
 void draw() {
 
   while (myPort.available () > 0) {
-    message = myPort.readStringUntil(10); 
+    String message = myPort.readStringUntil(10); 
     if (message != null) {
+      
+      // Load the JSON data from the message
       JSONObject json = new JSONObject();
       try {
         json = parseJSONObject(message);
@@ -57,49 +57,56 @@ void draw() {
         println("Could not parse [" + message + "]");
       }
 
+      // Copy the JSON labels and values into separate arrays.
       ArrayList<String> labels = new ArrayList<String>();
-      ArrayList<Float> data = new ArrayList<Float>();
+      ArrayList<Float> values = new ArrayList<Float>();
       for (String key : (Set<String>) json.keys()) {
         labels.add(key);
-        data.add(json.getFloat(key));
+        values.add(json.getFloat(key));
       }
 
+      // Draw the grid and chart the values
       background(255); 
       drawGrid(labels);   
       fill(204); 
-      for (int i = 0; i < data.size(); i++) {
-        drawBar(i, data.get(i));
+      for (int i = 0; i < values.size(); i++) {
+        drawBar(i, values.get(i));
       }
     }
   }
 }
 
+// Draw a bar to represent the current sensor reading
 void drawBar(int yIndex, float value) { 
-  rect(origin, yPos(yIndex)-fontSize, value * scale, fontSize);   //draw the value
+  rect(origin, yPos(yIndex)-fontSize, value * scale, fontSize);
 }
 
 void drawGrid(ArrayList<String> sensorLabels) {
   fill(0); 
 
-  // Draw the minimum value
+  // Draw the minimum value label and a line for it
   text(minValue, xPos(minValue), rectMargin-fontSize);   
   line(xPos(minValue), rectMargin, xPos(minValue), rectHeight + fontSize); 
-  // Draw the maximum value
+  // Draw the center value label and a line for it
   text((minValue+maxValue)/2, rectCenter, rectMargin-fontSize);   
   line(rectCenter, rectMargin, rectCenter, rectHeight + fontSize);
+  // Draw the maximum value label and a line for it
   text(maxValue, xPos(maxValue), rectMargin-fontSize);  
   line( xPos(maxValue), rectMargin, xPos(maxValue), rectHeight + fontSize);   
 
+  // Print each sensor label
   for (int i=0; i < sensorLabels.size(); i++) {
     text(sensorLabels.get(i), fontSize, yPos(i));
     text(sensorLabels.get(i), xPos(maxValue) + fontSize, yPos(i));
   }
 }
 
+// Calculate a y position, taking into account margins and font sizes
 int yPos(int index) {
   return rectMargin + fontSize + (index * fontSize*2);
 }
 
+// Calculate a y position, taking into account the scale and origin
 int xPos(int value) {
   return origin  + int(scale * value);
 }
