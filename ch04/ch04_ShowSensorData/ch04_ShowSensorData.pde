@@ -13,6 +13,7 @@ import java.util.Set;
 Serial myPort;  // Create object from Serial class
 PFont fontA;    // font to display text 
 int fontSize = 12;
+short LF = 10;        // ASCII linefeed
 
 int rectMargin  = 40;
 int windowWidth = 600;
@@ -28,24 +29,26 @@ int maxValue = 5;
 
 float scale = float(rectWidth) / (maxValue - minValue);
 
+// WARNING!
+// If necessary change the definition below to the correct port
+short portIndex = 0;  // select the com port, 0 is the first port
+
 void settings() {
   size(windowWidth, windowHeight);
 }
 
 void setup() {
-  short portIndex = 0;  // select the com port, 0 is the first port
-  String portName = Serial.list()[portIndex];
   println( (Object[]) Serial.list());
-  println(" Connecting to -> " + portName) ;
-  myPort = new Serial(this, portName, 9600);
+  println(" Connecting to -> " + Serial.list()[portIndex]);
+  myPort = new Serial(this, Serial.list()[portIndex], 9600);
   fontA = createFont("Arial.normal", fontSize);  
   textFont(fontA);
 }
 
 void draw() {
 
-  while (myPort.available () > 0) {
-    String message = myPort.readStringUntil(10); 
+  if (myPort.available () > 0) {
+    String message = myPort.readStringUntil(LF); 
     if (message != null) {
       
       // Load the JSON data from the message
@@ -87,12 +90,15 @@ void drawGrid(ArrayList<String> sensorLabels) {
   // Draw the minimum value label and a line for it
   text(minValue, xPos(minValue), rectMargin-fontSize);   
   line(xPos(minValue), rectMargin, xPos(minValue), rectHeight + fontSize); 
+  
   // Draw the center value label and a line for it
   text((minValue+maxValue)/2, rectCenter, rectMargin-fontSize);   
   line(rectCenter, rectMargin, rectCenter, rectHeight + fontSize);
+  
   // Draw the maximum value label and a line for it
   text(maxValue, xPos(maxValue), rectMargin-fontSize);  
-  line( xPos(maxValue), rectMargin, xPos(maxValue), rectHeight + fontSize);   
+  line(
+  xPos(maxValue), rectMargin, xPos(maxValue), rectHeight + fontSize);   
 
   // Print each sensor label
   for (int i=0; i < sensorLabels.size(); i++) {
