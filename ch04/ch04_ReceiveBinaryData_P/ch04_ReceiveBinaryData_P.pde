@@ -6,6 +6,9 @@
 import processing.serial.*;
 
 Serial myPort;        // Create object from Serial class
+
+// WARNING!
+// If necessary change the definition below to the correct port
 short portIndex = 1;  // select the com port, 0 is the first port
 
 char HEADER = 'H';
@@ -17,7 +20,7 @@ void setup()
   // Open whatever serial port is connected to Arduino.
   String portName = Serial.list()[portIndex];
   println(Serial.list());
-  println(" Connecting to -> " + Serial.list()[portIndex]);
+  println(" Connecting to -> " + portName);
   myPort = new Serial(this, portName, 9600);
 }
 
