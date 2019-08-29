@@ -9,7 +9,7 @@ Serial myPort;        // Create object from Serial class
 
 // WARNING!
 // If necessary change the definition below to the correct port
-short portIndex = 1;  // select the com port, 0 is the first port
+short portIndex = 0;  // select the com port, 0 is the first port
 
 char HEADER = 'H';
 int value1, value2;         // Data received from the serial port
