@@ -6,13 +6,19 @@
 import processing.serial.*;
 
 Serial myPort;  // Create object from Serial class
+
+// WARNING!
+// If necessary change the definition below to the correct port
+short portIndex = 0;  // select the com port, 0 is the first port
+
 public static final char HEADER    = 'H';
 public static final char MOUSE_TAG = 'M';
 
 void setup()
 {
   size(512, 512);
-  String portName = Serial.list()[0];
+  String portName = Serial.list()[portIndex];
+  println((Object[]) Serial.list());
   myPort = new Serial(this, portName, 9600);
 }
 
