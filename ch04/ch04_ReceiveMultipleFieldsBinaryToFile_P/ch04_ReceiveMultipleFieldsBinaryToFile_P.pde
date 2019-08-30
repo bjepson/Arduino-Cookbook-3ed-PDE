@@ -24,7 +24,7 @@ void setup()
   size(200, 200);
   // Open whatever serial port is connected to Arduino.
   String portName = Serial.list()[portIndex];
-  println(Serial.list());
+  println((Object[]) Serial.list());
   println(" Connecting to -> " + portName);
   myPort = new Serial(this, portName, 9600);
   Date now = new Date();
