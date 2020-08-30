@@ -11,7 +11,7 @@ import java.util.*;
 import java.text.*;
 
 PrintWriter output;
-DateFormat fnameFormat= new SimpleDateFormat("yyMMdd_HHmm");
+DateFormat fnameFormat = new SimpleDateFormat("yyMMdd_HHmm");
 DateFormat  timeFormat = new SimpleDateFormat("hh:mm:ss");
 String fileName;
 
@@ -35,7 +35,6 @@ void setup()
 void draw()
 {
   int val;
-  String time;
 
   if ( myPort.available() >= 15)  // wait for the entire message to arrive
   {
@@ -44,26 +43,27 @@ void draw()
       String timeString = timeFormat.format(new Date());
       println("Message received at " + timeString);
       output.println(timeString);
-      // header found
+
       // get the integer containing the bit values
       val = readArduinoInt();
       // print the value of each bit
-      for(int pin=2, bit=1; pin <= 13; pin++){
+      for (int pin=2, bit=1; pin <= 13; pin++){
         print("digital pin " + pin + " = " );
         output.print("digital pin " + pin + " = " );
         int isSet = (val & bit);
-        if( isSet == 0){
+        if (isSet == 0){
            println("0");
            output.println("0");
         }
-        else  {
+        else 
+        {
           println("1");
-          output.println("0");
+          output.println("1");
         }
         bit = bit * 2; // shift the bit
       }
       // print the six analog values
-      for(int i=0; i < 6; i ++){
+      for (int i=0; i < 6; i ++){
         val = readArduinoInt();
         println("analog port " + i + "=" + val);
         output.println("analog port " + i + "=" + val);
