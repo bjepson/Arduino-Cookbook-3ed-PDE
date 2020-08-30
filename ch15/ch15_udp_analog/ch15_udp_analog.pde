@@ -44,7 +44,6 @@ void keyPressed()
 void receive( byte[] data ) 
 {
   println("incoming data is:");
-  println(data.length);
   for (int i=0; i < min(6, data.length); i++)
   {
     int intVal = int(data[i]);
@@ -52,7 +51,6 @@ void receive( byte[] data )
     print(i); 
     print(":");
     println(intVal);
-    println(scroll[i].getPos()); 
     redraw();
   }
 }
@@ -85,8 +83,6 @@ class HScrollbar
 
   void update() 
   {
-    print(spos);
-    print("-->");
     if (over()) 
     {
       over = true;
@@ -111,8 +107,6 @@ class HScrollbar
     {
       spos = spos + (newspos-spos)/loose;
     }
-    println(spos);
-
   }
 
   int constrain(int val, int minv, int maxv) 
