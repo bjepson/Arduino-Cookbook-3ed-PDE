@@ -51,7 +51,6 @@ void receive( byte[] data )
     print(i); 
     print(":");
     println(intVal);
-    redraw();
   }
 }
 
